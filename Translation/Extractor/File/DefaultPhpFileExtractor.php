@@ -79,9 +79,9 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
                 if ($annot instanceof Ignore) {
                     $ignore = true;
                 } else if ($annot instanceof Desc) {
-                    $desc = $annot->text;
+                    $desc = $this->removeCommentAsterisks($annot->text);
                 } else if ($annot instanceof Meaning) {
-                    $meaning = $annot->text;
+                    $meaning = $this->removeCommentAsterisks($annot->text);
                 }
             }
         }
@@ -166,5 +166,10 @@ class DefaultPhpFileExtractor implements LoggerAwareInterface, FileVisitorInterf
         }
 
         return null;
+    }
+
+    private function removeCommentAsterisks($text)
+    {
+        return preg_replace('/(\\n\\r|\\r\\n|\\r|\\n)\s+\*\s*/', "\n", $text);
     }
 }

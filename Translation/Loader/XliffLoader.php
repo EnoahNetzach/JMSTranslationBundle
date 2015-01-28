@@ -45,11 +45,7 @@ class XliffLoader implements LoaderInterface
         $catalogue->setLocale($locale);
 
         foreach ($doc->xpath('//xliff:trans-unit') as $trans) {
-            $id = ($resName = (string) $trans->attributes()->resname)
-                       ? $resName : (string) $trans->source;
-
-            $m = Message::create($id, $domain)
-                    ->setDesc((string) $trans->source)
+            $m = Message::create((string) $trans->source, $domain)
                     ->setLocaleString((string) $trans->target)
             ;
             $catalogue->add($m);
@@ -64,6 +60,10 @@ class XliffLoader implements LoaderInterface
                         $column ? (integer) $column : null
                     ));
                 }
+            }
+
+            if ($desc = (string) $trans->attributes()->resname) {
+                $m->setDesc($desc);
             }
 
             if ($meaning = (string) $trans->attributes()->extradata) {

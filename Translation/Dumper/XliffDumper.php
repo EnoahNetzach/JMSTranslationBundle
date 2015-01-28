@@ -93,13 +93,12 @@ class XliffDumper implements DumperInterface
         foreach ($catalogue->getDomain($domain)->all() as $id => $message) {
             $body->appendChild($unit = $doc->createElement('trans-unit'));
             $unit->setAttribute('id', hash('sha1', $id));
-            $unit->setAttribute('resname', $id);
 
             $unit->appendChild($source = $doc->createElement('source'));
-            if (preg_match('/[<>&]/', $message->getSourceString())) {
-                $source->appendChild($doc->createCDATASection($message->getSourceString()));
+            if (preg_match('/[<>&]/', $id)) {
+                $source->appendChild($doc->createCDATASection($id));
             } else {
-                $source->appendChild($doc->createTextNode($message->getSourceString()));
+                $source->appendChild($doc->createTextNode($id));
             }
 
             $unit->appendChild($target = $doc->createElement('target'));
@@ -132,6 +131,10 @@ class XliffDumper implements DumperInterface
 
                     $unit->appendChild($doc->createElementNS('jms:reference', (string) $source));
                 }
+            }
+
+            if ($desc = $message->getDesc()) {
+                $unit->setAttribute('resname', $desc);
             }
 
             if ($meaning = $message->getMeaning()) {
